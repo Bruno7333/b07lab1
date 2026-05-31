@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Polynomial {
@@ -37,7 +39,7 @@ public class Polynomial {
         exponents = exp;
     }
 
-    public Polynomial(File file){
+    public Polynomial(File file) throws IOException{
         Scanner scanner = new Scanner(file);
         String line = scanner.nextLine();
         scanner.close();
@@ -73,7 +75,7 @@ public class Polynomial {
 
         }
 
-        int[] final_coeff = new int[total_exp_count];
+        double[] final_coeff = new double[total_exp_count];
         int[] final_exp = new int[total_exp_count];
 
         p = 0; 
@@ -93,8 +95,8 @@ public class Polynomial {
                 final_coeff[i] = other.coefficients[q];
                 q++;
             } else if (this.exponents[p] == other.exponents[q]){
-                final_exp[i] = this.exponents[p]
-                final_coeff[i] = this.coefficients[p] + other.coefficients[q]
+                final_exp[i] = this.exponents[p];
+                final_coeff[i] = this.coefficients[p] + other.coefficients[q];
                 p++;
                 q++;
             } else if (this.exponents[p] < other.exponents[q]){
@@ -118,7 +120,7 @@ public class Polynomial {
 
         int max_polynomial = this.exponents[this.exponents.length - 1] * other.exponents[other.exponents.length - 1];
 
-        int[] polynomial_arr = new int[max_polynomial + 1];
+        double[] polynomial_arr = new double[max_polynomial + 1];
         int exponent_value = 0;
 
         // for int i in range(this.exponents.length)
@@ -142,5 +144,45 @@ public class Polynomial {
 
     public boolean hasRoot(double x){
         return evaluate(x) == 0;
+    }
+
+    public void saveToFile(String file) throws IOException{
+        PrintWriter writer = new PrintWriter(file);
+        String output = "";
+        double curr_coeff;
+        int curr_exp;
+
+        for(int i = 0; i < this.coefficients.length; i++){
+            curr_coeff = this.coefficients[i];
+            curr_exp = this.exponents[i];
+            if(curr_exp == 0){
+                if(curr_coeff != 0){
+                    output += curr_coeff;
+                }
+            } else if(curr_exp == 1){
+                if(curr_coeff > 0 && i != 0){
+                    output += "+";
+                    output += curr_coeff;
+                    output += "x";
+
+                } else{
+                    output += curr_coeff;
+                    output += "x";
+                }
+            } else{
+                if(curr_coeff > 0 && i != 0){
+                    output += "+";
+                    output += curr_coeff;
+                    output += "x";
+                    output += curr_exp;
+                }else{
+                    output += curr_coeff;
+                    output += "x";
+                    output += curr_exp;
+                }
+            }
+        }
+        writer.println(output);
+        writer.close();
     }
 }
